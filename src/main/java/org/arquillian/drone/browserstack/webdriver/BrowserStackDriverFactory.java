@@ -50,7 +50,7 @@ public class BrowserStackDriverFactory implements
         BrowserCapabilitiesRegistry registry = registryInstance.get();
 
         // first, try to create a BrowserCapabilities object based on Field/Parameter type of @Drone annotated field
-        BrowserCapabilities browser = registry.getEntryFor("browserstack");
+        BrowserCapabilities browser = registry.getEntryFor(BrowserStackDriver.READABLE_NAME);
 
         WebDriverConfiguration configuration = new WebDriverConfiguration(browser).configure(arquillianDescriptor,
             dronePoint.getQualifier());
@@ -66,7 +66,7 @@ public class BrowserStackDriverFactory implements
         try {
 
             String url = (String) configuration.getCapabilities().getCapability("url");
-            if (url == null) {
+            if (isEmpty(url)) {
                 String username = (String) configuration.getCapabilities().getCapability("username");
                 String automateKey = (String) configuration.getCapabilities().getCapability("automate.key");
                 if (isEmpty(username) || isEmpty(automateKey)) {

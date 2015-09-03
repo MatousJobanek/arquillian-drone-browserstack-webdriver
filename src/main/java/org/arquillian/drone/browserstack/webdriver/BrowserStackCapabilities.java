@@ -27,7 +27,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 public class BrowserStackCapabilities implements BrowserCapabilities {
 
     public String getImplementationClassName() {
-        return "BrowserStackDriver";
+        return BrowserStackDriver.class.getName();
     }
 
     public Map<String, ?> getRawCapabilities() {
@@ -35,7 +35,7 @@ public class BrowserStackCapabilities implements BrowserCapabilities {
     }
 
     public String getReadableName() {
-        return "browserstack";
+        return BrowserStackDriver.READABLE_NAME;
     }
 
     public int getPrecedence() {

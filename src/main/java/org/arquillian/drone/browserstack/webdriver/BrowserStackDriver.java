@@ -26,6 +26,8 @@ import org.openqa.selenium.remote.RemoteWebDriver;
  */
 public class BrowserStackDriver extends RemoteWebDriver {
 
+    public static final String READABLE_NAME = "browserstack";
+
     public BrowserStackDriver(URL url, Capabilities capabilities) {
         super(url, capabilities);
     }

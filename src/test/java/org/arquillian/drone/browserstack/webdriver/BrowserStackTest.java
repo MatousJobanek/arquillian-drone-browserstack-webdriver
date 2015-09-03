@@ -21,6 +21,7 @@ import org.jboss.arquillian.graphene.Graphene;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -31,7 +32,7 @@ import org.openqa.selenium.support.FindBy;
 public class BrowserStackTest {
 
     @Drone
-    BrowserStackDriver driver;
+    WebDriver driver;
 
     @FindBy(name = "q")
     WebElement queryElement;
