@@ -32,16 +32,13 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
  * @author <a href="mailto:mjobanek@redhat.com">Matous Jobanek</a>
  */
 @RunWith(Arquillian.class)
-public class BrowserStackTest {
-
-    @Drone
-    WebDriver driver;
+public class BrowserStackMethodTest {
 
     @FindBy(name = "q")
     WebElement queryElement;
 
     @Test
-    public void browserTest() {
+    public void browserTest(@Drone final WebDriver driver) {
 
         driver.get("http://www.google.com/ncr");
         Graphene.waitGui().until().element(queryElement).is().visible();

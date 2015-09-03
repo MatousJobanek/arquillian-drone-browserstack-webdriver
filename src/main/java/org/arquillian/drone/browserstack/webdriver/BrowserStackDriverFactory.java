@@ -30,6 +30,7 @@ import org.jboss.arquillian.drone.spi.Instantiator;
 import org.jboss.arquillian.drone.webdriver.configuration.WebDriverConfiguration;
 import org.jboss.arquillian.drone.webdriver.spi.BrowserCapabilities;
 import org.jboss.arquillian.drone.webdriver.spi.BrowserCapabilitiesRegistry;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
 /**
  * @author <a href="mailto:mjobanek@redhat.com">Matous Jobanek</a>
@@ -54,6 +55,7 @@ public class BrowserStackDriverFactory implements
 
         WebDriverConfiguration configuration = new WebDriverConfiguration(browser).configure(arquillianDescriptor,
             dronePoint.getQualifier());
+        configureInClass((DesiredCapabilities) configuration.getCapabilities());
 
         return configuration;
     }
@@ -65,10 +67,13 @@ public class BrowserStackDriverFactory implements
     public BrowserStackDriver createInstance(WebDriverConfiguration configuration) {
         try {
 
-            String url = (String) configuration.getCapabilities().getCapability("url");
+            DesiredCapabilities capabilities = (DesiredCapabilities) configuration.getCapabilities();
+            configureInClass(capabilities);
+
+            String url = (String) capabilities.getCapability("url");
             if (isEmpty(url)) {
-                String username = (String) configuration.getCapabilities().getCapability("username");
-                String automateKey = (String) configuration.getCapabilities().getCapability("automate.key");
+                String username = (String) capabilities.getCapability("username");
+                String automateKey = (String) capabilities.getCapability("automate.key");
                 if (isEmpty(username) || isEmpty(automateKey)) {
                     log.severe(
                         "You have to specify either url or username and automate.key in your arquillian descriptor");
@@ -78,11 +83,29 @@ public class BrowserStackDriverFactory implements
                 }
             }
 
-            return new BrowserStackDriver(new URL(url), configuration.getCapabilities());
+            return new BrowserStackDriver(new URL(url), capabilities);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private void configureInClass(DesiredCapabilities capabilities) {
+        String configureClass = (String) capabilities.getCapability("configure.class");
+        if (!isEmpty(configureClass)) {
+            try {
+                Class<?> configClass =
+                    BrowserStackDriverFactory.class.getClassLoader()
+                        .loadClass(configureClass);
+
+                ConfigureBrowserStackCapabilities config =
+                    (ConfigureBrowserStackCapabilities) configClass.newInstance();
+                config.configure(capabilities);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private boolean isEmpty(String object) {
