@@ -30,7 +30,7 @@ import org.jboss.arquillian.drone.spi.Instantiator;
 import org.jboss.arquillian.drone.webdriver.configuration.WebDriverConfiguration;
 import org.jboss.arquillian.drone.webdriver.spi.BrowserCapabilities;
 import org.jboss.arquillian.drone.webdriver.spi.BrowserCapabilitiesRegistry;
-import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.Capabilities;
 
 /**
  * @author <a href="mailto:mjobanek@redhat.com">Matous Jobanek</a>
@@ -55,7 +55,6 @@ public class BrowserStackDriverFactory implements
 
         WebDriverConfiguration configuration = new WebDriverConfiguration(browser).configure(arquillianDescriptor,
             dronePoint.getQualifier());
-        configureInClass((DesiredCapabilities) configuration.getCapabilities());
 
         return configuration;
     }
@@ -66,9 +65,7 @@ public class BrowserStackDriverFactory implements
 
     public BrowserStackDriver createInstance(WebDriverConfiguration configuration) {
         try {
-
-            DesiredCapabilities capabilities = (DesiredCapabilities) configuration.getCapabilities();
-            configureInClass(capabilities);
+            Capabilities capabilities = configuration.getCapabilities();
 
             String url = (String) capabilities.getCapability("url");
             if (isEmpty(url)) {
@@ -90,23 +87,6 @@ public class BrowserStackDriverFactory implements
         return null;
     }
 
-    private void configureInClass(DesiredCapabilities capabilities) {
-        String configureClass = (String) capabilities.getCapability("configure.class");
-        if (!isEmpty(configureClass)) {
-            try {
-                Class<?> configClass =
-                    BrowserStackDriverFactory.class.getClassLoader()
-                        .loadClass(configureClass);
-
-                ConfigureBrowserStackCapabilities config =
-                    (ConfigureBrowserStackCapabilities) configClass.newInstance();
-                config.configure(capabilities);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     private boolean isEmpty(String object) {
         return object == null || object.isEmpty();
